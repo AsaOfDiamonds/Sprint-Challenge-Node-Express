@@ -67,17 +67,13 @@ const deleteProject = (req, res) => {
 }
 
 const updateProject = (req, res) => {
-    if (req.body.name === undefined) {
-        res.status(400).json({ errorMessage: "Please provide a name for the Project." });
+    if (req.params.id === undefined) {
+        res.status(400).json({ errorMessage: "Name and description are required for the Project." });
         return;
     }
     dbProject.update(req.params.id, req.body)
-        .then(projectUpdated => {
-            if (projectUpdated > 0) {
-                res.status(200).json({ message: `${projectUpdated} Project updated` });
-            } else {
-                res.status(404).json({ message: 'Failed to update Project with the specific ID' })
-            }
+        .then(count => {
+            res.status(200).json(count);            
         })
         .catch(err => {
             res.status(500).json({ message: `Internal server error. Could not update Project`, error: err });
