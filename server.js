@@ -159,32 +159,21 @@ const addNewAction = (req, res) => {
 }
 
 const updateAction = (req, res) => {
-    if (req.body.project_id === undefined || req.body.description === undefined || req.body.notes === undefined) {
-        res.status(400).json({ message: "Name and description for this Action are required." });
+    if (req.params.id === undefined || req.body.description === undefined || req.body.notes === undefined) {
+        res.status(400).json({ errorMessage: "Description and notes are required for the Action." });
         return;
     }
-
     dbActions.update(req.params.id, req.body)
         .then(count => {
-            if (count > 0) {
-                dbActions.get(req.params.id)
-                    .then(action => {
-                        if ((action.hasOwnProperty('length') && action.length > 0)) {
-                            res.status(200).json(action);
-                        } else {
-                            res.status(404).json({ message: `Failed to find Action with the specified ID ${req.params.id}.` })
-                        }
-                    });
-            } else {
-                res.status(404).json({
-                    message: `The Project with the specified ID ${req.params.project_id} does not exist.`
-                })
-            }
+            res.status(200).json(count);
         })
         .catch(err => {
-            res.status(500).json({ message: 'Failed to update Action', error: err });
+            res.status(500).json({ message: `Internal server error. Could not update Action`, error: err });
         });
+
 }
+
+
 
 // //Post end points
 server.get('/api/actions', getAllActions); 
